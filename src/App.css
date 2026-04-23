@@ -1,0 +1,94 @@
+
+Reset
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+/* Body Styling */
+body {
+  font-family: "Inter", sans-serif;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: #f1f5f9;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Links */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Buttons */
+button {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* Container (optional utility) */
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #06b6d4;
+  border-radius: 10px;
+}
+
+/* Card hover effect */
+.card {
+  background: #1e293b;
+  border-radius: 10px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+/* Input fields */
+input, textarea {
+  outline: none;
+  border: 1px solid #334155;
+  background: #020617;
+  color: #fff;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+/* Form focus */
+input:focus, textarea:focus {
+  border-color: #06b6d4;
+}
+
+/* Headings */
+h1, h2, h3 {
+  font-weight: bold;
+}
+
+/* Utility spacing */
+.section {
+  padding: 40px 20px;
+}
+
