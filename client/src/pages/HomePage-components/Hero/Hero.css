@@ -1,0 +1,37 @@
+.hero{
+    width: 100%;
+    height: 100vh;
+    background: linear-gradient(rgba(8, 0, 58, 0.386),rgba(8, 0, 58, 0.381)) , url(../../assets/hero.webp.webp);
+    
+    background-size: cover;
+    background-position: center;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+   
+}
+
+.hero-text{
+    max-width: 800px;
+    text-align: center;
+}
+.hero-text h1{
+    font-size: 60px;
+    font-weight: 400;
+    text-align: center;
+}
+
+.hero-text p{
+    line-height: 1.8;
+    font-size: 16px;
+}
+
+.btn{
+    font-size: 19px;
+    font-weight: 200;
+}
+.btn:hover{
+    background-color: rgba(0, 255, 255, 0.545);
+    /* box-shadow: -10px 5px 10px 5px rgb(34, 34, 34); */
+}
