@@ -7,9 +7,9 @@ import jwt from "jsonwebtoken";
 
 export const registerUser = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password, role } = req.body;
 
-        if (!name || !email || !password) {
+        if (!name || !email || !password || !role) {
             return res.status(400).json({ success: false, message: "All fields are required" });
         }
 
@@ -20,7 +20,7 @@ export const registerUser = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const newUser = new User({ name, email, password: hashedPassword });
+        const newUser = new User({ name, email, password: hashedPassword, role });
 
         const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: "15m" });
         verifyMail(token, email);
@@ -203,5 +203,39 @@ export const changePassword =  async(req, res) =>{
 
     } catch (error) {
         return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+}
+
+import Booking from "../models/Booking.js";
+import Message from "../models/Message.js";
+
+// GET user stats for dashboard
+export const getUserStats = async (req, res) => {
+    try {
+        const userId = req.userId;
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        const savedCount = user.savedProperties ? user.savedProperties.length : 0;
+        
+        const bookingsCount = await Booking.countDocuments({ user: userId });
+        
+        const messagesCount = await Message.countDocuments({
+            $or: [{ senderId: userId }, { receiverId: userId }]
+        });
+
+        const viewsCount = 0;
+
+        res.status(200).json({
+            saved: savedCount,
+            bookings: bookingsCount,
+            messages: messagesCount,
+            views: viewsCount,
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
     }
 }

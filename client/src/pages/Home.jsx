@@ -14,7 +14,7 @@ const Home = () => {
       <Navbar />
       <Hero />
 
-      <div className="cont">
+      <div className="cont bg-[#FAF8F4]" >
         <Title subtitle="Our Program" head="What We Offer" />
         <Programs />
         <About />

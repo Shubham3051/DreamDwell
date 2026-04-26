@@ -1,168 +1,179 @@
 import { useState } from "react";
-import { AuthContext } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Home } from "lucide-react";
 import axios from "axios";
-import { toast } from 'react-toastify';
-import Navbar from "../components/common/Navbar";
-
-
+import { toast } from "react-toastify";
 
 const Register = () => {
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
+    role: "user",
   });
 
-  const [showPassword, setShowPassword] = useState(false); 
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // const { register } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-  // const handlehange = (e)=>{
-  //   setFormData((prev)=>({
-  //     ...prev,
-  //     [name]:value
-  //   }))
-  // }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  console.log(form);
+    try {
+      setIsLoading(true);
 
-  try {
-    setIsLoading(true);
+      const res = await axios.post(
+        "http://localhost:8000/user/register",
+        form,
+        { headers: { "Content-Type": "application/json" } }
+      );
 
-    const res = await axios.post(
-      "http://localhost:8000/user/register",
-      form,
-      {
-        headers: {
-          "Content-Type": "application/json", 
-        },
+      if (res.data.success) {
+        toast.success("Account created successfully");
+        navigate("/login");
+      } else {
+        toast.error(res.data.message);
       }
-    );
-
-    if (res.data.success) {
-      toast.success(res.data.message); 
-      navigate("/verify");
-    } else {
-      toast.error(res.data.message);
+    } catch (err) {
+      toast.error("Registration failed");
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-  } catch (error) {
-    console.log(error);
-    toast.error("Something went wrong"); 
-  } finally {
-    setIsLoading(false);
-  }
-};
-
-  //   const res = await register(form);
-  //   if (res.success) {
-  //     navigate("/login");
-  //   } else {
-  //     alert(res.message);
-  //   }
-  // };
+  const inputClass =
+    "w-full px-4 py-3 border border-[#E6E0DA] rounded-xl bg-white text-[#1C1B1A] text-sm outline-none focus:border-[#D4755B] focus:ring-2 focus:ring-[#D4755B]/20 transition";
 
   return (
-    <div>
-      <Navbar />
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-cyan-900 to-slate-800 px-4">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/20 p-8 rounded-3xl shadow-2xl space-y-5"
-      >
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-white">
-            Create Account 
-          </h2>
-          <p className="text-gray-300 text-sm mt-1">
-            Join us and start your journey
+    <div className="min-h-screen flex items-center justify-center bg-[#FAF8F4] px-4">
+
+      <div className="max-w-[480px] w-full">
+
+        {/* Logo */}
+        <div className="flex justify-center mb-6">
+          <Link to="/" className="flex items-center gap-2">
+            <div className="w-9 h-9 bg-[#D4755B] rounded-lg flex items-center justify-center">
+              <Home className="w-5 h-5 text-white" />
+            </div>
+            <span className="font-bold text-[#1C1B1A]">DreamDwell</span>
+          </Link>
+        </div>
+
+        {/* Card */}
+        <div className="bg-white border border-[#E6E0DA] rounded-2xl p-8 shadow-xl">
+
+          {/* Header */}
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold text-[#1C1B1A]">
+              Create Account
+            </h2>
+            <p className="text-sm text-[#64748B] mt-1">
+              Register as User / Agent / Admin
+            </p>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+
+            {/* Name */}
+            <div>
+              <label className="text-sm text-[#1C1B1A]">Name</label>
+              <input
+                type="text"
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                className={inputClass}
+                placeholder="Enter name"
+                required
+              />
+            </div>
+
+            {/* Email */}
+            <div>
+              <label className="text-sm text-[#1C1B1A]">Email</label>
+              <input
+                type="email"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                className={inputClass}
+                placeholder="Enter email"
+                required
+              />
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className="text-sm text-[#1C1B1A]">Password</label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={form.password}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="Enter password"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#64748B]"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </div>
+
+            {/* Role */}
+            <div>
+              <label className="text-sm text-[#1C1B1A]">Role</label>
+              <select
+                name="role"
+                value={form.role}
+                onChange={handleChange}
+                className={inputClass}
+              >
+                <option value="user">User</option>
+                <option value="agent">Agent</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+
+            {/* Button */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full py-3 rounded-xl font-semibold text-white bg-[#D4755B] hover:bg-[#C05621] transition"
+            >
+              {isLoading ? "Creating..." : "Create Account"}
+            </button>
+
+          </form>
+
+          {/* Login */}
+          <p className="text-center text-sm text-[#64748B] mt-5">
+            Already have an account?{" "}
+            <Link to="/login" className="font-semibold text-accent ">
+              Login
+            </Link>
           </p>
         </div>
 
-        {/* Name */}
-        <div className="flex flex-col gap-1">
-          <label className="text-gray-300 text-sm">Name</label>
-          <input
-            type="text"
-            placeholder="Enter your name"
-            className="w-full px-4 py-3 pr-12 rounded-xl bg-white/20 text-white placeholder-gray-400 
-                         border border-white/20 outline-none
-                         focus:ring-2 focus:ring-cyan-400 focus:border-transparent
-                         transition-all duration-300"
-            value={form.name}
-            onChange={(e) =>
-              setForm({ ...form, name: e.target.value })
-            }
-          />
-        </div>
-
-        {/* Email */}
-        <div className="flex flex-col gap-1">
-          <label className="text-gray-300 text-sm">Email</label>
-          <input
-            type="email"
-            placeholder="Enter your email"
-            className="w-full px-4 py-3 pr-12 rounded-xl bg-white/20 text-white placeholder-gray-400 
-                         border border-white/20 outline-none
-                         focus:ring-2 focus:ring-cyan-400 focus:border-transparent
-                         transition-all duration-300"
-            value={form.email}
-            onChange={(e) =>
-              setForm({ ...form, email: e.target.value })
-            }
-          />
-        </div>
-
-        {/* Password */}
-        <div className="flex flex-col gap-1">
-          <label className="text-gray-300 text-sm">Password</label>
-
-          <div className="relative mt-2">
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Enter your password"
-              className="w-full px-4 py-3 pr-12 rounded-xl bg-white/20 text-white placeholder-gray-400 
-                         border border-white/20 outline-none
-                         focus:ring-2 focus:ring-cyan-400 focus:border-transparent
-                         transition-all duration-300"
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-            />
-
-            {/* Eye Icon */}
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 hover:text-white"
-            >
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-            </button>
-          </div>
-        </div>
-
-        <button className="w-full py-3 rounded-xl font-semibold text-white
-                     bg-gradient-to-r from-cyan-500 to-blue-500
-                     hover:from-cyan-400 hover:to-blue-400
-                     active:scale-95
-                     transition-all duration-300 shadow-lg hover:shadow-cyan-500/40">
-          Register
-        </button>
-
-        <div className="text-md text-center text-gray-300 mt-6">
-          <Link
-            to="/login"
-            className="text-cyan-400 hover:text-cyan-300 font-medium">
-            Already have an account?{" "} Sign In
+        {/* Back */}
+        <div className="text-center mt-6">
+          <Link to="/" className="text-sm text-[#64748B] hover:text-[#D4755B]">
+            ← Back to Home
           </Link>
         </div>
-      </form>
-    </div>
+
+      </div>
     </div>
   );
 };

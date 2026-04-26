@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["user", "admin"],
+    enum: ["user", "agent", "admin"],
     default: "user"
   },
   isVerified: {
@@ -46,6 +46,10 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: null
   },
+  savedProperties: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Property"
+  }],
 }, { timestamps: true });
 
 export default mongoose.model("User", userSchema);

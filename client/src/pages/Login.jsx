@@ -1,10 +1,9 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Home } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import Navbar from "../components/common/Navbar";
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -14,6 +13,12 @@ const Login = () => {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  const role = localStorage.getItem("role");
+
+  useEffect(() => {
+    if (!role) navigate("/select-role");
+  }, [role, navigate]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -22,32 +27,28 @@ const Login = () => {
 
       const res = await axios.post(
         "http://localhost:8000/user/login",
-        form,
+        { ...form, role },
         {
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
         }
       );
 
-      console.log("LOGIN RESPONSE:", res.data);
-
       if (res.data.success) {
-        // ✅ FIX: pass FULL user object (not only _id)
-        const userData = res.data.data;
+        login(res.data.data);
 
-        login(userData); // 🔥 FIXED HERE
-
-        // optional: if token exists
-        if (res.data.token) {
-          localStorage.setItem("token", res.data.token);
+        if (res.data.accessToken) {
+          localStorage.setItem("token", res.data.accessToken);
         }
 
-        toast.success("Login successful!");
-        navigate("/dashboard");
+        toast.success("Welcome back!");
+
+        const userRole = res.data.data.role;
+
+        if (userRole === "admin") navigate("/admin-dashboard");
+        else if (userRole === "agent") navigate("/agent-dashboard");
+        else navigate("/user-dashboard");
       }
     } catch (error) {
-      console.error("Login error:", error);
       toast.error(error.response?.data?.message || "Login failed");
     } finally {
       setIsloading(false);
@@ -55,44 +56,68 @@ const Login = () => {
   };
 
   return (
-    <div>
-      <Navbar />
+    <div className="min-h-screen flex items-center justify-center bg-[#FAF8F4] px-4">
 
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-cyan-900 to-slate-800 px-4">
+      <div className="w-full max-w-md">
 
+        {/* LOGO */}
+        <div className="flex justify-center mb-6">
+          <Link to="/" className="flex items-center gap-2">
+            <div className="w-10 h-10 bg-[#D4755B] rounded-xl flex items-center justify-center shadow-md">
+              <Home className="w-5 h-5 text-white" />
+            </div>
+            <span className="font-bold text-lg text-[#1C1B1A]">
+              DreamDwell
+            </span>
+          </Link>
+        </div>
+
+        {/* CARD */}
         <form
           onSubmit={handleSubmit}
-          className="w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/20 p-8 rounded-3xl shadow-2xl"
+          className="bg-white border border-[#E6D5C3] rounded-2xl shadow-lg p-8"
         >
 
-          <h2 className="text-3xl font-bold text-center text-white mb-2">
+          {/* TITLE */}
+          <h2 className="text-2xl font-bold text-center text-[#1C1B1A]">
             Welcome Back
           </h2>
 
-          <p className="text-center text-gray-300 text-sm mb-6">
-            Login to continue your journey
+          <p className="text-center text-sm text-[#5A5856] mt-1 mb-6">
+            Login as{" "}
+            <span className="text-[#D4755B] uppercase font-semibold">
+              {role}
+            </span>
           </p>
 
-          {/* Email */}
-          <div className="mb-5">
-            <label className="text-gray-300 text-sm">Email</label>
+          {/* EMAIL */}
+          <div className="mb-4">
+            <label className="text-sm font-medium text-[#1C1B1A]">
+              Email
+            </label>
             <input
               type="email"
-              className="w-full mt-2 px-4 py-3 rounded-xl bg-white/20 text-white"
+              required
+              placeholder="you@example.com"
+              className="w-full mt-2 px-4 py-3 rounded-xl border border-[#E6D5C3] outline-none focus:border-[#D4755B] focus:ring-2 focus:ring-[#D4755B]/10 transition"
               onChange={(e) =>
                 setForm({ ...form, email: e.target.value })
               }
             />
           </div>
 
-          {/* Password */}
-          <div className="mb-6">
-            <label className="text-gray-300 text-sm">Password</label>
+          {/* PASSWORD */}
+          <div className="mb-3">
+            <label className="text-sm font-medium text-[#1C1B1A]">
+              Password
+            </label>
 
             <div className="relative mt-2">
               <input
                 type={showPassword ? "text" : "password"}
-                className="w-full px-4 py-3 pr-12 rounded-xl bg-white/20 text-white"
+                required
+                placeholder="••••••••"
+                className="w-full px-4 py-3 pr-12 rounded-xl border border-[#E6D5C3] outline-none focus:border-[#D4755B] focus:ring-2 focus:ring-[#D4755B]/10 transition"
                 onChange={(e) =>
                   setForm({ ...form, password: e.target.value })
                 }
@@ -101,38 +126,51 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#5A5856]"
               >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
           </div>
 
-          {/* forgot password */}
-          <div className="text-right mb-6">
-            <Link to="/forgot-password" className="text-cyan-400 text-sm">
+          {/* FORGOT */}
+          <div className="text-right mb-5">
+            <Link
+              to="/forgot-password"
+              className="text-sm text-accent hover:underline"
+            >
               Forgot Password?
             </Link>
           </div>
 
-          {/* Button */}
+          {/* BUTTON */}
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-cyan-500 to-blue-500"
+            className="w-full py-3 rounded-xl bg-[#D4755B] hover:bg-[#C05E44] text-white font-semibold transition shadow-md disabled:opacity-60"
           >
             {isLoading ? "Logging in..." : "Login"}
           </button>
 
-          {/* Footer */}
-          <p className="text-center text-gray-300 mt-6">
+          {/* FOOTER */}
+          <p className="text-center text-sm text-[#5A5856] mt-6">
             Don’t have an account?{" "}
-            <Link to="/register" className="text-cyan-400">
+            <Link to="/register" className="text-accent font-medium">
               Sign Up
             </Link>
           </p>
-
         </form>
+
+        {/* BACK */}
+        <div className="text-center mt-6">
+          <Link
+            to="/"
+            className="text-sm text-accent  transition"
+          >
+            ← Back to Home
+          </Link>
+        </div>
+
       </div>
     </div>
   );

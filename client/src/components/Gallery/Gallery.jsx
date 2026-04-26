@@ -13,7 +13,7 @@ const Gallery = () => {
 
   return (
     <>
-    <div className='gallery'>
+    <div className='gallery '>
         <div className="gallery1">
             <img src={gallery_1} alt='photo 1' className='z'/>
             <img src={gallery_2} alt='photo 2' className='z'/>

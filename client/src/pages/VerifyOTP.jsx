@@ -1,114 +1,109 @@
-import React, { useState } from 'react'
-import axios from 'axios'
-import { useParams, useNavigate } from 'react-router-dom'
-import { toast } from 'react-toastify'
+import React, { useState } from "react";
+import axios from "axios";
+import { useParams, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const VerifyOTP = () => {
-  const { email } = useParams()
-  const navigate = useNavigate()
+  const { email } = useParams();
+  const navigate = useNavigate();
 
-  const [otp, setOtp] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
+  const [otp, setOtp] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleVerify = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError("")
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
     try {
-      const res = await axios.post(`http://localhost:8000/user/verify-otp/${email}`,
+      const res = await axios.post(
+        `http://localhost:8000/user/verify-otp/${email}`,
         { email, otp }
-      )
+      );
 
       if (res.data.success) {
-        toast.success("OTP Verified ✅")
-        navigate(`/change-password/${email}`)
+        toast.success("OTP Verified ✅");
+        navigate(`/change-password/${email}`);
       } else {
-        setError(res.data.message)
-        toast.error(res.data.message)
+        setError(res.data.message);
+        toast.error(res.data.message);
       }
-
     } catch (err) {
-      console.log(err)
-      setError("Verification failed")
-      toast.error("Server error ❌")
+      setError("Verification failed");
+      toast.error("Server error ❌");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center 
-                    bg-gradient-to-br from-slate-950 via-cyan-900 to-slate-900 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#FAF8F4] px-4">
 
       <form
         onSubmit={handleVerify}
-        className="w-full max-w-md bg-white/10 backdrop-blur-2xl 
-                   border border-white/20 p-8 rounded-3xl shadow-2xl
-                   text-center transition-all duration-500 
-                   hover:shadow-cyan-500/30"
+        className="w-full max-w-md bg-white border border-[#E6E0DA] 
+                   rounded-2xl shadow-xl p-8 text-center"
       >
 
         {/* Icon */}
-        <div className="text-5xl mb-4">🔐</div>
+        <div className="text-4xl mb-3">🔐</div>
 
-        {/* Heading */}
-        <h2 className="text-2xl font-bold text-white mb-2">
+        {/* Title */}
+        <h2 className="text-2xl font-bold text-[#221410] mb-1">
           Verify OTP
         </h2>
 
-        <p className="text-gray-300 text-sm mb-6">
-          Enter the OTP sent to your email
+        <p className="text-sm text-[#6B7280] mb-6">
+          Enter the 6-digit code sent to your email
         </p>
 
         {/* OTP Input */}
         <input
           type="text"
-          maxLength="6"
+          maxLength={6}
           value={otp}
-          onChange={(e) => setOtp(e.target.value)}
-          placeholder="Enter 6-digit OTP"
-          required
-          className="w-full px-4 py-3 rounded-xl bg-white/20 text-white 
-                     placeholder-gray-400 border border-white/20 
-                     outline-none mb-4 text-center tracking-widest text-lg
-                     focus:ring-2 focus:ring-cyan-400 transition-all"
+          onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+          placeholder="••••••"
+          className="w-full tracking-[0.5em] text-center text-xl font-semibold
+                     px-4 py-3 rounded-xl border border-[#E6E0DA]
+                     focus:outline-none focus:ring-2 focus:ring-[#D4755B]
+                     mb-3"
         />
+
+        {/* Email display */}
+        <p className="text-xs text-[#9CA3AF] mb-4">
+          Sent to: <span className="text-[#D4755B]">{email}</span>
+        </p>
 
         {/* Error */}
         {error && (
-          <p className="text-red-400 text-sm mb-3 animate-pulse">
-            {error}
-          </p>
+          <p className="text-sm text-red-500 mb-3">{error}</p>
         )}
 
         {/* Button */}
         <button
           disabled={loading}
           className="w-full py-3 rounded-xl font-semibold text-white
-                     bg-gradient-to-r from-cyan-500 to-blue-500
-                     hover:from-cyan-400 hover:to-blue-400
-                     active:scale-95 disabled:opacity-50
-                     transition-all duration-300 shadow-lg hover:shadow-cyan-500/40"
+                     bg-[#1C1B1A] hover:bg-[#D4755B]
+                     transition-all duration-300 disabled:opacity-60"
         >
           {loading ? "Verifying..." : "Verify OTP"}
         </button>
 
         {/* Resend */}
-        <p className="text-sm text-gray-400 mt-5">
-          Didn’t receive OTP?{" "}
+        <p className="text-sm text-[#6B7280] mt-5">
+          Didn’t receive code?{" "}
           <span
-            onClick={() => toast.info("Resend OTP logic here")}
-            className="text-cyan-400 cursor-pointer hover:underline"
+            onClick={() => toast.info("Resend OTP feature coming soon")}
+            className="text-[#D4755B] cursor-pointer font-medium hover:underline"
           >
-            Resend
+            Resend OTP
           </span>
         </p>
-
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default VerifyOTP
+export default VerifyOTP;

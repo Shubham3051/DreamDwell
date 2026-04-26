@@ -1,49 +1,59 @@
-import React from 'react'
+import React from "react";
+import { MailCheck, RefreshCw } from "lucide-react";
 
 const VerifyEmail = () => {
-    return (
-        <div className="min-h-screen flex items-center justify-center 
-                        bg-gradient-to-br from-slate-950 via-cyan-900 to-slate-900 px-4">
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-[#FAF8F4] px-4">
 
-            <div className="w-full max-w-md bg-white/10 backdrop-blur-2xl 
-                            border border-white/20 p-8 rounded-3xl shadow-2xl
-                            text-center transition-all duration-500 
-                            hover:shadow-cyan-500/30">
+      <div className="w-full max-w-md">
 
-                {/* Icon */}
-                <div className="text-5xl mb-4 animate-bounce">
-                    📩
-                </div>
+        {/* Card */}
+        <div className="bg-white border border-[#E6E0DA] rounded-2xl p-8 shadow-xl text-center">
 
-                {/* Heading */}
-                <h2 className="text-2xl font-bold text-white mb-3">
-                    Check Your Email
-                </h2>
+          {/* Icon */}
+          <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-[#D4755B]/10 flex items-center justify-center">
+            <MailCheck className="w-7 h-7 text-[#D4755B]" />
+          </div>
 
-                {/* Description */}
-                <p className="text-gray-300 mb-6 text-sm leading-relaxed">
-                    We’ve sent a verification link to your email.  
-                    Please check your inbox and click the link to activate your account.
-                </p>
+          {/* Heading */}
+          <h2 className="text-2xl font-bold text-[#1C1B1A] mb-2">
+            Check Your Email
+          </h2>
 
-                {/* Button */}
-                {/* <button 
-                    className="w-full py-3 rounded-xl font-semibold text-white
-                               bg-gradient-to-r from-cyan-500 to-blue-500
-                               hover:from-cyan-400 hover:to-blue-400
-                               active:scale-95 transition-all duration-300
-                               shadow-lg hover:shadow-cyan-500/40"
-                >
-                    Resend Email
-                </button> */}
+          {/* Description */}
+          <p className="text-sm text-[#64748B] leading-relaxed mb-6">
+            We’ve sent a verification link to your email address.  
+            Please check your inbox and click the link to activate your account.
+          </p>
 
-                {/* Footer */}
-                <p className="text-xs text-gray-400 mt-5">
-                    Didn’t receive the email? Check your spam folder or try again.
-                </p>
-            </div>
+          {/* Resend Button */}
+          <button
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-white bg-[#D4755B] hover:bg-[#C05621] transition"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Resend Email
+          </button>
+
+          {/* Footer */}
+          <p className="text-xs text-[#9CA3AF] mt-5">
+            Didn’t receive it? Check spam or try resending.
+          </p>
+
         </div>
-    )
-}
 
-export default VerifyEmail
+        {/* Back link */}
+        <div className="text-center mt-6">
+          <a
+            href="/login"
+            className="text-sm text-[#64748B] hover:text-[#D4755B] transition"
+          >
+            ← Back to Login
+          </a>
+        </div>
+
+      </div>
+    </div>
+  );
+};
+
+export default VerifyEmail;

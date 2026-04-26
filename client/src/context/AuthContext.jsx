@@ -86,6 +86,12 @@ export const AuthProvider = ({ children }) => {
   // 🔄 Load user safely from localStorage
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
+    const storedToken = localStorage.getItem("token");
+
+    // Self-heal corrupted token 
+    if (storedToken === "undefined" || storedToken === "null") {
+      localStorage.removeItem("token");
+    }
 
     try {
       if (storedUser && storedUser !== "undefined") {
@@ -105,10 +111,7 @@ export const AuthProvider = ({ children }) => {
 
   // ✅ Login (store safely)
   const login = (userData) => {
-    console.log("ok",userData);
     if (!userData) return;
-
-
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));
   };
@@ -117,6 +120,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
   };
 
   return (

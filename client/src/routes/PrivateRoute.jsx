@@ -20,7 +20,7 @@ const PrivateRoute = ({ children }) => {
   // 🟡 Prevent instant redirect while state is loading
   if (user === undefined) return null;
 
-  return user ? children : <Navigate to="/login" />;
+  return user ? children : <Navigate to="/select-role" />;
 };
 
 export default PrivateRoute;

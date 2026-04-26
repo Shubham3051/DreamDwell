@@ -5,7 +5,8 @@ import Properties from "../pages/Properties";
 import PropertyDetails from "../pages/PropertyDetails";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
-import Dashboard from "../pages/Dashboard";
+import UserDashboard from "../pages/UserDashboard";
+import AgentDashboard from "../pages/AgentDashboard";
 import NotFound from "../pages/NotFound";
 import PrivateRoute from "./PrivateRoute";
 import VerifyEmail from "../pages/verifyEmail";
@@ -14,7 +15,15 @@ import ForgotPassword from "../pages/ForgotPassword";
 import VerifyOTP from "../pages/VerifyOTP";
 import ChangePassword from "../pages/ChangePassword";
 import ProtectedRoute from "../components/ProtectedRoute";
-import UserProfile from "../pages/UserProfile";
+import Profile from "../pages/Profile";
+import SelectRole from "../pages/SelectRole";
+
+import PropertyList from "../pages/List";
+import AddProperty from "../pages/Add";
+import SavedProperties from "../pages/SavedProperties";
+import ChatPage from "../pages/ChatPage";
+import Bookings from "../pages/Bookings";
+
 
 const AppRoutes = () => {
   return (
@@ -31,33 +40,35 @@ const AppRoutes = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/verify-otp/:email" element={<VerifyOTP />} />
       <Route path="/change-password/:email" element={<ChangePassword />} />
-      <Route path="/user-profile" element={<UserProfile />} />
+      <Route path="/profile" element={<Profile />} />
+      <Route path="/select-role" element={<SelectRole />} />
+      <Route path="/agent-dashboard" element={<AgentDashboard />} />
+
+      <Route path="/saved-properties" element={<SavedProperties />} />
+      <Route path="/chat" element={<ChatPage />} />
+      <Route path="/bookings" element={<Bookings />} />
+
+      <Route path="/list" element={<PropertyList />} />
+      <Route path="/add-property" element={<AddProperty />} />
 
 
 
       {/* Protected Route */}
-      <Route 
-        path="/dashboard" 
+      {/* <Route 
+        path="/user-dashboard" 
         element={
           <PrivateRoute>
-            <Dashboard />
+            <UserDashboard />
           </PrivateRoute>
         } 
-      />
-    <Route
-      path="/property/:id"
-      element={
-      <PrivateRoute>
-        <PropertyDetails />
-      </PrivateRoute>
-  }
-/>
-      {/* <Route 
-        path="/dashboard" 
-        element={
-        <Dashboard />
-        } 
       /> */}
+    <Route path="/property/:id" element={<PropertyDetails />} />
+      <Route 
+        path="/user-dashboard" 
+        element={
+        <UserDashboard />
+        } 
+      />
 
 
       {/* 404 */}

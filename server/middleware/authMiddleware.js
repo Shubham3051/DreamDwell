@@ -26,6 +26,7 @@ export const isAuthenticated = async(req, res, next)=>{
                 return res.status(404).json({ success: false, message: "User not found" });
             }
             req.userId = user._id
+            req.user = user // Assign full user object
             next()
         })
 
