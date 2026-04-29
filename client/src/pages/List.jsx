@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Home, BedDouble, Bath, Maximize, Plus } from "lucide-react";
+import { Home, BedDouble, Bath, Maximize, Plus, Edit3, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import Footer from "../components/common/Footer";
+import Navbar from "../components/common/Navbar";
 
 const PropertyList = () => {
   const [properties, setProperties] = useState([]);
@@ -13,12 +16,35 @@ const PropertyList = () => {
   const fetchProperties = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:8000/api/properties");
+      const token = localStorage.getItem("token");
+      const res = await axios.get("http://localhost:8000/api/properties/user/my", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       setProperties(res.data || []);
     } catch (error) {
       console.log("Error fetching properties:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this property?")) return;
+    
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`http://localhost:8000/api/properties/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      toast.success("Property deleted successfully");
+      setProperties(properties.filter(p => p._id !== id));
+    } catch (error) {
+      console.error("Error deleting property:", error);
+      toast.error("Failed to delete property");
     }
   };
 
@@ -39,6 +65,8 @@ const PropertyList = () => {
   }
 
   return (
+          <div>
+        <Navbar />
     <div className="min-h-screen bg-[#FAF8F4] p-6">
       {/* HEADER */}
       <div className="flex justify-between items-center mb-6">
@@ -135,7 +163,7 @@ const PropertyList = () => {
                 </p>
 
                 {/* ACTIONS */}
-                <div className="mt-4 flex gap-2">
+                <div className="mt-4 flex flex-wrap gap-2">
                   <button
                     onClick={() =>
                       navigate(`/property/${property._id}`)
@@ -153,6 +181,22 @@ const PropertyList = () => {
                   >
                     Save
                   </button>
+
+                  <button
+                    onClick={() =>
+                      navigate(`/update/${property._id}`)
+                    }
+                    className="flex items-center justify-center bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-sm hover:bg-gray-200 transition"
+                  >
+                    <Edit3 className="w-4 h-4 mr-1" /> Edit
+                  </button>
+
+                  <button
+                    onClick={() => handleDelete(property._id)}
+                    className="flex items-center justify-center bg-red-50 text-red-600 px-3 py-1 rounded-lg text-sm hover:bg-red-100 transition"
+                  >
+                    <Trash2 className="w-4 h-4 mr-1" /> Delete
+                  </button>
                 </div>
               </div>
             </motion.div>
@@ -160,6 +204,8 @@ const PropertyList = () => {
         </div>
       )}
     </div>
+        <Footer />
+        </div>
   );
 };
 

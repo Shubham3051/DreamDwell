@@ -14,15 +14,18 @@ import Verify from "../pages/verify";
 import ForgotPassword from "../pages/ForgotPassword";
 import VerifyOTP from "../pages/VerifyOTP";
 import ChangePassword from "../pages/ChangePassword";
-import ProtectedRoute from "../components/ProtectedRoute";
 import Profile from "../pages/Profile";
 import SelectRole from "../pages/SelectRole";
 
 import PropertyList from "../pages/List";
 import AddProperty from "../pages/Add";
+import UpdateProperty from "../pages/Update";
 import SavedProperties from "../pages/SavedProperties";
 import ChatPage from "../pages/ChatPage";
 import Bookings from "../pages/Bookings";
+import Contact from "../pages/Contact";
+
+import See from "../components/Home/See";
 
 
 const AppRoutes = () => {
@@ -50,7 +53,10 @@ const AppRoutes = () => {
 
       <Route path="/list" element={<PropertyList />} />
       <Route path="/add-property" element={<AddProperty />} />
+      <Route path="/update/:id" element={<UpdateProperty />} />
 
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/see-more" element={<See />} />
 
 
       {/* Protected Route */}

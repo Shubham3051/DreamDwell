@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Sidebar from "./Sidebar";
-import Navbar from "./Navbar"; // ✅ ADD THIS
 
 const DashboardLayout = ({ children, role }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,7 +18,7 @@ const DashboardLayout = ({ children, role }) => {
       />
 
       {/* MAIN AREA */}
-      <div className="flex-1 flex flex-col bg-[#e6d5c3]  h-100%">
+      <div className="flex-1 flex flex-col bg-[#FAF8F4]  min-h-screen">
 
         {/* CONTENT */}
         <main
@@ -30,6 +29,7 @@ const DashboardLayout = ({ children, role }) => {
         >
           {children}
         </main>
+          
 
       </div>
     </div>

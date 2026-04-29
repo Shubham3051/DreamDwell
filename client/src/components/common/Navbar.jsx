@@ -136,7 +136,7 @@
 import { NavLink, useNavigate, useLocation, Link } from "react-router-dom";
 import { useContext, useState, useRef, useEffect } from "react";
 import { AuthContext } from "../../context/AuthContext";
-import { Menu, Bell, X , Home} from "lucide-react";
+import { Menu, Bell, X, Home } from "lucide-react";
 
 const Navbar = ({ setSidebarOpen }) => {
   const { user, logout } = useContext(AuthContext);
@@ -150,7 +150,7 @@ const Navbar = ({ setSidebarOpen }) => {
   const handleLogout = () => {
     logout();
     setOpen(false);
-    navigate("/login");
+    navigate("/register");
   };
 
   // Close dropdown on outside click
@@ -169,23 +169,81 @@ const Navbar = ({ setSidebarOpen }) => {
     setMobileMenu(false);
   }, [location.pathname]);
 
-  const getDashboardPath = () => {
-    if (!user) return "/";
-    if (user.role === "agent") return "/agent-dashboard";
-    if (user.role === "user") return "/user-dashboard";
-    if (user.role === "admin") return "/admin";
-    return "/";
+  // ✅ Dashboard paths by role
+  const dashboardPaths = {
+    user: "/user-dashboard",
+    agent: "/agent-dashboard",
+    admin: "/admin",
   };
 
+  const getDashboardPath = () => {
+    if (!user || !user.role) return "/";
+    return dashboardPaths[user.role] || "/";
+  };
+
+  // ✅ Base nav links
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "Properties", path: "/properties" },
   ];
 
+  // ✅ Role-based links
+  const roleLinks = {
+    user: [
+      { name: "Chat", path: "/chat" },
+      { name: "Bookings", path: "/bookings" },
+    ],
+    agent: [
+      { name: "Chat", path: "/chat" },
+      { name: "My Listings", path: "/list" },
+    ],
+    admin: [
+      { name: "Users", path: "/admin/users" },
+      { name: "Properties", path: "/admin/properties" },
+    ],
+  };
+
+  const renderLinks = (isMobile = false) => {
+    const baseClass = isMobile
+      ? "hover:text-cyan-400"
+      : ({ isActive }) =>
+          `transition ${
+            isActive
+              ? "text-cyan-400 font-semibold"
+              : "hover:text-cyan-400"
+          }`;
+
+    return (
+      <>
+        {/* Common Links */}
+        {navLinks.map((link) => (
+          <NavLink key={link.path} to={link.path} className={baseClass}>
+            {link.name}
+          </NavLink>
+        ))}
+
+        {/* Dashboard */}
+        {user && (
+          <NavLink to={getDashboardPath()} className={baseClass}>
+            Dashboard
+          </NavLink>
+        )}
+
+        {/* Role Links */}
+        {user &&
+          roleLinks[user.role]?.map((link) => (
+            <NavLink key={link.path} to={link.path} className={baseClass}>
+              {link.name}
+            </NavLink>
+          ))}
+      </>
+    );
+  };
+
   return (
     <nav className="flex justify-between items-center px-4 sm:px-8 py-4 bg-[#1C1B1A] text-white sticky top-0 z-50">
 
-      <div className="flex justify-between items-center space-between w-full">
+      <div className="flex justify-between items-center w-full">
 
         {/* LEFT */}
         <div className="flex items-center gap-4">
@@ -193,21 +251,20 @@ const Navbar = ({ setSidebarOpen }) => {
           {/* Sidebar Toggle */}
           {setSidebarOpen && (
             <button
-              onClick={() => setSidebarOpen(prev => !prev)}
+              onClick={() => setSidebarOpen((prev) => !prev)}
               className="md:hidden"
             >
               <Menu className="w-6 h-6" />
             </button>
           )}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-white/10">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="w-9 h-9 bg-[#D4755B] rounded-lg flex items-center justify-center">
-                <Home className="w-5 h-5 text-white" />
-              </div>
-              <span className="font-bold">DreamDwell</span>
-            </Link>
-        </div>
 
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2">
+            <div className="w-9 h-9 bg-[#D4755B] rounded-lg flex items-center justify-center">
+              <Home className="w-5 h-5 text-white" />
+            </div>
+            <span className="font-bold">DreamDwell</span>
+          </Link>
         </div>
 
         {/* RIGHT */}
@@ -215,63 +272,7 @@ const Navbar = ({ setSidebarOpen }) => {
 
           {/* DESKTOP NAV */}
           <div className="hidden md:flex items-center gap-6">
-            {navLinks.map((link) => (
-            <NavLink
-              key={link.path}
-              to={link.path}
-              className={({ isActive }) =>
-                `transition ${
-                  isActive
-                    ? "text-cyan-400 font-semibold"
-                    : "hover:text-cyan-400"
-                }`
-              }
-            >
-              {link.name}
-            </NavLink>
-          ))}
-
-          {user && (
-            <NavLink
-              to={getDashboardPath()}
-              className={({ isActive }) =>
-                isActive
-                  ? "text-cyan-400 font-semibold"
-                  : "hover:text-cyan-400"
-              }
-            >
-              Dashboard
-            </NavLink>
-          )}
-
-          {user && (
-            <>
-              <NavLink
-                to="/saved-properties"
-                className={({ isActive }) =>
-                  isActive ? "text-cyan-400 font-semibold" : "hover:text-cyan-400"
-                }
-              >
-                ❤️ Saved
-              </NavLink>
-              <NavLink
-                to="/chat"
-                className={({ isActive }) =>
-                  isActive ? "text-cyan-400 font-semibold" : "hover:text-cyan-400"
-                }
-              >
-                💬 Chat
-              </NavLink>
-              <NavLink
-                to="/bookings"
-                className={({ isActive }) =>
-                  isActive ? "text-cyan-400 font-semibold" : "hover:text-cyan-400"
-                }
-              >
-                📅 Bookings
-              </NavLink>
-            </>
-          )}
+            {renderLinks()}
           </div>
 
           {/* 👤 Profile */}
@@ -290,7 +291,7 @@ const Navbar = ({ setSidebarOpen }) => {
                   <button
                     onClick={() => {
                       setOpen(false);
-                      navigate("/user-profile");
+                      navigate("/profile");
                     }}
                     className="w-full text-left px-4 py-2 hover:bg-gray-100"
                   >
@@ -308,7 +309,7 @@ const Navbar = ({ setSidebarOpen }) => {
             </div>
           )}
 
-          {/* 📱 Mobile Menu Button */}
+          {/* Mobile Menu Button */}
           <button
             className="md:hidden"
             onClick={() => setMobileMenu(!mobileMenu)}
@@ -318,35 +319,14 @@ const Navbar = ({ setSidebarOpen }) => {
         </div>
       </div>
 
-      {/* 📱 MOBILE MENU */}
+      {/* MOBILE MENU */}
       {mobileMenu && (
-        <div className="md:hidden bg-gray-800 px-6 py-4 flex flex-col gap-4">
-
-          {navLinks.map((link) => (
-            <NavLink
-              key={link.path}
-              to={link.path}
-              className="hover:text-cyan-400"
-            >
-              {link.name}
-            </NavLink>
-          ))}
-
-          {user && (
-            <NavLink to={getDashboardPath()}>
-              Dashboard
-            </NavLink>
-          )}
-
-          {user && (
-            <>
-              <NavLink to="/saved-properties">❤️ Saved</NavLink>
-              <NavLink to="/chat">💬 Chat</NavLink>
-              <NavLink to="/bookings">📅 Bookings</NavLink>
-            </>
-          )}
+      <div className="absolute top-full left-0 w-full md:hidden bg-[#1C1B1A] shadow-lg border-t border-white/10 z-50 animate-fadeIn">
+        <div className="flex flex-col gap-4 px-6 py-4">
+          {renderLinks(true)}
         </div>
-      )}
+      </div>
+    )}
     </nav>
   );
 };

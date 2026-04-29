@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Eye, EyeOff, Lock } from "lucide-react";
+import api from "../services/api"; // ✅ use axios instance
 
 const ChangePassword = () => {
-  const { email } = useParams();
+  const { token } = useParams(); // 🔥 use token instead of email
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -18,30 +18,36 @@ const ChangePassword = () => {
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const validate = () => {
+    if (form.newPassword.length < 6) {
+      return "Password must be at least 6 characters";
+    }
+    if (form.newPassword !== form.confirmPassword) {
+      return "Passwords do not match";
+    }
+    return null;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (form.newPassword !== form.confirmPassword) {
-      return setError("Passwords do not match");
-    }
-
-    if (form.newPassword.length < 6) {
-      return setError("Password must be at least 6 characters");
+    const validationError = validate();
+    if (validationError) {
+      setError(validationError);
+      return;
     }
 
     setLoading(true);
     setError("");
 
     try {
-      const res = await axios.post(
-        `http://localhost:8000/user/change-password/${email}`,
-        {
-          newPassword: form.newPassword,
-        }
-      );
+      const res = await api.post(`/user/reset-password/${token}`, {
+        password: form.newPassword,
+      });
 
       if (res.data.success) {
         toast.success("Password updated successfully");
@@ -67,6 +73,7 @@ const ChangePassword = () => {
         className="w-full max-w-md bg-white border border-[#E6E0DA] 
                    rounded-2xl shadow-xl p-8 text-center"
       >
+
         {/* Icon */}
         <div className="flex justify-center mb-3">
           <div className="w-12 h-12 rounded-full bg-[#D4755B]/10 flex items-center justify-center">
@@ -74,13 +81,12 @@ const ChangePassword = () => {
           </div>
         </div>
 
-        {/* Title */}
         <h2 className="text-2xl font-bold text-[#221410] mb-1">
-          Change Password
+          Reset Password
         </h2>
 
         <p className="text-sm text-[#6B7280] mb-6">
-          Create a strong new password for your account
+          Enter a new password for your account
         </p>
 
         {/* New Password */}
@@ -97,7 +103,7 @@ const ChangePassword = () => {
 
           <button
             type="button"
-            onClick={() => setShowPassword(!showPassword)}
+            onClick={() => setShowPassword((prev) => !prev)}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6B7280]"
           >
             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -126,15 +132,11 @@ const ChangePassword = () => {
           disabled={loading}
           className="w-full py-3 rounded-xl font-semibold text-white
                      bg-[#1C1B1A] hover:bg-[#D4755B]
-                     transition-all duration-300 disabled:opacity-60"
+                     transition disabled:opacity-60"
         >
-          {loading ? "Updating..." : "Change Password"}
+          {loading ? "Updating..." : "Reset Password"}
         </button>
 
-        {/* Email info */}
-        <p className="text-xs text-[#9CA3AF] mt-5">
-          Resetting for: <span className="text-[#D4755B]">{email}</span>
-        </p>
       </form>
     </div>
   );

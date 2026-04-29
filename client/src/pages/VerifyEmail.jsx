@@ -1,7 +1,39 @@
-import React from "react";
+import React, { useState } from "react";
 import { MailCheck, RefreshCw } from "lucide-react";
+import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import api from "../services/api"; // ✅ use api
 
 const VerifyEmail = () => {
+  const [loading, setLoading] = useState(false);
+
+  // ✅ get email safely (you can store this during register)
+  const email = sessionStorage.getItem("verifyEmail");
+
+  const handleResend = async () => {
+    if (!email) {
+      toast.error("Email not found. Please register again.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const res = await api.post("/user/resend-verification", { email });
+
+      if (res.data.success) {
+        toast.success("Verification email sent again");
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || "Failed to resend email";
+      toast.error(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#FAF8F4] px-4">
 
@@ -28,10 +60,14 @@ const VerifyEmail = () => {
 
           {/* Resend Button */}
           <button
-            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-white bg-[#D4755B] hover:bg-[#C05621] transition"
+            onClick={handleResend}
+            disabled={loading}
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-white bg-[#D4755B] hover:bg-[#C05621] transition disabled:opacity-60"
           >
-            <RefreshCw className="w-4 h-4" />
-            Resend Email
+            <RefreshCw
+              className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
+            />
+            {loading ? "Sending..." : "Resend Email"}
           </button>
 
           {/* Footer */}
@@ -43,12 +79,12 @@ const VerifyEmail = () => {
 
         {/* Back link */}
         <div className="text-center mt-6">
-          <a
-            href="/login"
-            className="text-sm text-[#64748B] hover:text-[#D4755B] transition"
+          <Link
+            to="/login"
+            className="text-sm text-accent hover:text-[#D4755B] transition"
           >
             ← Back to Login
-          </a>
+          </Link>
         </div>
 
       </div>

@@ -4,12 +4,12 @@ import {
   unsaveProperty,
   getSavedProperties,
 } from "../controllers/savedController.js";
-import { isAuthenticated } from "../middleware/authMiddleware.js";
+import { authMiddleware } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", isAuthenticated, saveProperty);
-router.get("/", isAuthenticated, getSavedProperties);
-router.delete("/:propertyId", isAuthenticated, unsaveProperty);
+router.post("/", authMiddleware, saveProperty);
+router.get("/", authMiddleware, getSavedProperties);
+router.delete("/:propertyId", authMiddleware, unsaveProperty);
 
 export default router;

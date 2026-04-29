@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../components/common/Navbar";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Footer from "../components/common/Footer";
 
 const Bookings = () => {
   const [bookings, setBookings] = useState([]);
@@ -131,6 +132,7 @@ const Bookings = () => {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 };

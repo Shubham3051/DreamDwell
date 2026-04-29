@@ -1,18 +1,47 @@
-import express from 'express';  
+import express from "express";
+import {
+  registerUser,
+  loginUser,
+  verfication,
+  forgotPassword,
+  verifyOTP,
+  changePassword,
+  getUserStats,
+  getAgentStats,
+  logoutUser,
+} from "../controllers/userController.js";
 
-import { loginUser, registerUser, verfication, logoutUser, forgotPassword, verifyOTP, changePassword, getUserStats } from '../controllers/userController.js';
-import { isAuthenticated } from '../middleware/authMiddleware.js';
-import { userSchema, validateUser } from '../validators/userValidate.js';
+import { authMiddleware } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/register",validateUser(userSchema), registerUser);
-router.post("/verify", verfication);
+
+// ======================
+// AUTH
+// ======================
+router.post("/register", registerUser);
 router.post("/login", loginUser);
-router.post("/logout",isAuthenticated, logoutUser);
+router.post("/logout", authMiddleware, logoutUser);
+
+
+// ======================
+// EMAIL VERIFICATION
+// ======================
+router.post("/verify/:token", verfication);
+
+
+// ======================
+// USER INFO
+// ======================
+router.get("/me", authMiddleware, getUserStats);
+router.get("/agent-stats", authMiddleware, getAgentStats);
+
+
+// ======================
+// PASSWORD RESET FLOW
+// ======================
 router.post("/forgot-password", forgotPassword);
-router.post("/verify-otp/:email", verifyOTP);
-router.post("/change-password/:email", changePassword);
-router.get("/stats", isAuthenticated, getUserStats);
+router.post("/verify-otp", verifyOTP);
+router.post("/reset-password", changePassword);
 
 export default router;

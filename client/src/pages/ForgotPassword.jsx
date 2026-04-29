@@ -1,8 +1,8 @@
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Mail } from "lucide-react";
+import api from "../services/api"; // ✅ use central API
 
 const ForgotPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -10,27 +10,43 @@ const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
 
+  const validate = () => {
+    if (!email.includes("@")) {
+      return "Enter a valid email";
+    }
+    return null;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const validationError = validate();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
     setIsLoading(true);
     setError("");
 
     try {
-      const res = await axios.post(
-        "http://localhost:8000/user/forgot-password",
-        { email }
-      );
+      const res = await api.post("/user/forgot-password", { email });
 
       if (res.data.success) {
-        toast.success("OTP sent to email");
-        navigate(`/verify-otp/${email}`);
+        toast.success("OTP sent to your email");
+
+        // ✅ store email temporarily (better than URL)
+        sessionStorage.setItem("resetEmail", email);
+
+        navigate("/verify-otp");
       } else {
         setError(res.data.message);
         toast.error(res.data.message);
       }
     } catch (err) {
-      setError("Something went wrong");
-      toast.error("Server error");
+      const msg = err.response?.data?.message || "Server error";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }
@@ -52,7 +68,6 @@ const ForgotPassword = () => {
           </div>
         </div>
 
-        {/* Title */}
         <h2 className="text-2xl font-bold text-[#221410] mb-1">
           Forgot Password
         </h2>
@@ -61,7 +76,7 @@ const ForgotPassword = () => {
           Enter your email to receive a reset OTP
         </p>
 
-        {/* Email Input */}
+        {/* Email */}
         <input
           type="email"
           placeholder="Enter your email address"
@@ -83,12 +98,12 @@ const ForgotPassword = () => {
           disabled={isLoading}
           className="w-full py-3 rounded-xl font-semibold text-white
                      bg-[#1C1B1A] hover:bg-[#D4755B]
-                     transition-all duration-300 disabled:opacity-60"
+                     transition disabled:opacity-60"
         >
           {isLoading ? "Sending OTP..." : "Send OTP"}
         </button>
 
-        {/* Back to login */}
+        {/* Back */}
         <p className="text-sm text-[#6B7280] mt-5">
           Remember your password?{" "}
           <span

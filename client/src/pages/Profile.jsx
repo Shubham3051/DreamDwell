@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import Footer from "../components/common/Footer";
 
 const Profile = () => {
   const { user, logout } = useContext(AuthContext);
@@ -8,17 +9,17 @@ const Profile = () => {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    navigate("/register");
   };
 
-  // ✅ Role-based dashboard redirect
+  //  Role-based dashboard redirect
   const getDashboard = () => {
     if (user?.role === "admin") return "/admin";
     if (user?.role === "agent") return "/agent-dashboard";
     return "/user-dashboard";
   };
 
-  // ✅ Role badge color
+  // Role badge color
   const getRoleStyle = () => {
     switch (user?.role) {
       case "admin":
@@ -35,7 +36,7 @@ const Profile = () => {
 
       <div className="bg-white w-full max-w-2xl rounded-xl shadow-lg p-8">
 
-        {/* 🔥 HEADER */}
+        {/*  HEADER */}
         <div className="flex items-center gap-4 border-b pb-4 mb-6">
 
           <div className="w-16 h-16 rounded-full bg-blue-600 flex items-center justify-center text-white text-2xl font-bold">
@@ -48,7 +49,7 @@ const Profile = () => {
             </h2>
             <p className="text-gray-500">{user?.email}</p>
 
-            {/* ✅ Role Badge */}
+            {/*  Role Badge */}
             <span className={`inline-block mt-1 px-2 py-1 text-xs rounded ${getRoleStyle()}`}>
               {user?.role}
             </span>
@@ -56,7 +57,7 @@ const Profile = () => {
 
         </div>
 
-        {/* 🔥 PROFILE INFO */}
+        {/*  PROFILE INFO */}
         <div className="grid gap-4">
 
           <div className="flex justify-between border-b py-2">
@@ -74,7 +75,7 @@ const Profile = () => {
             <span className="font-medium capitalize">{user?.role}</span>
           </div>
 
-          {/* ✅ Agent Only */}
+          {/*  Agent Only */}
           {user?.role === "agent" && (
             <div className="flex justify-between border-b py-2">
               <span className="text-gray-500">Total Listings</span>
@@ -82,7 +83,7 @@ const Profile = () => {
             </div>
           )}
 
-          {/* ✅ Admin Only */}
+          {/*  Admin Only */}
           {user?.role === "admin" && (
             <div className="flex justify-between border-b py-2">
               <span className="text-gray-500">System Access</span>
@@ -90,7 +91,7 @@ const Profile = () => {
             </div>
           )}
 
-          {/* ✅ Common */}
+          {/*  Common */}
           <div className="flex justify-between py-2">
             <span className="text-gray-500">Status</span>
             <span className="text-green-600 font-medium">Active</span>
@@ -98,7 +99,7 @@ const Profile = () => {
 
         </div>
 
-        {/* 🔥 ACTIONS */}
+        {/*  ACTIONS */}
         <div className="flex gap-4 mt-6">
 
           <button

@@ -1,16 +1,15 @@
-import { useState, useContext, useEffect } from "react";
-import { AuthContext } from "../context/AuthContext";
+import { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff, Home } from "lucide-react";
-import axios from "axios";
 import { toast } from "react-toastify";
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
-  const [isLoading, setIsloading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const { login } = useContext(AuthContext);
+  const { login } = useAuth(); // ✅ use context
   const navigate = useNavigate();
 
   const role = localStorage.getItem("role");
@@ -23,41 +22,37 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      setIsloading(true);
+      setIsLoading(true);
 
-      const res = await axios.post(
-        "http://localhost:8000/user/login",
-        { ...form, role },
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      // ✅ use AuthContext (not axios)
+      const res = await login({ ...form, role });
 
-      if (res.data.success) {
-        login(res.data.data);
-
-        if (res.data.accessToken) {
-          localStorage.setItem("token", res.data.accessToken);
-        }
-
+      if (res.success) {
         toast.success("Welcome back!");
 
-        const userRole = res.data.data.role;
+        // role-based redirect
+        const userRole = localStorage.getItem("user")
+          ? JSON.parse(localStorage.getItem("user")).role
+          : null;
 
         if (userRole === "admin") navigate("/admin-dashboard");
         else if (userRole === "agent") navigate("/agent-dashboard");
         else navigate("/user-dashboard");
+      } else {
+        toast.error(res.message);
       }
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Login failed");
+    } catch {
+      toast.error("Login failed");
     } finally {
-      setIsloading(false);
+      setIsLoading(false);
     }
   };
 
+  const inputClass =
+    "w-full mt-2 px-4 py-3 rounded-xl border border-[#E6D5C3] outline-none focus:border-[#D4755B] focus:ring-2 focus:ring-[#D4755B]/10 transition";
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#FAF8F4] px-4">
-
       <div className="w-full max-w-md">
 
         {/* LOGO */}
@@ -77,8 +72,6 @@ const Login = () => {
           onSubmit={handleSubmit}
           className="bg-white border border-[#E6D5C3] rounded-2xl shadow-lg p-8"
         >
-
-          {/* TITLE */}
           <h2 className="text-2xl font-bold text-center text-[#1C1B1A]">
             Welcome Back
           </h2>
@@ -99,9 +92,9 @@ const Login = () => {
               type="email"
               required
               placeholder="you@example.com"
-              className="w-full mt-2 px-4 py-3 rounded-xl border border-[#E6D5C3] outline-none focus:border-[#D4755B] focus:ring-2 focus:ring-[#D4755B]/10 transition"
+              className={inputClass}
               onChange={(e) =>
-                setForm({ ...form, email: e.target.value })
+                setForm((prev) => ({ ...prev, email: e.target.value }))
               }
             />
           </div>
@@ -119,13 +112,13 @@ const Login = () => {
                 placeholder="••••••••"
                 className="w-full px-4 py-3 pr-12 rounded-xl border border-[#E6D5C3] outline-none focus:border-[#D4755B] focus:ring-2 focus:ring-[#D4755B]/10 transition"
                 onChange={(e) =>
-                  setForm({ ...form, password: e.target.value })
+                  setForm((prev) => ({ ...prev, password: e.target.value }))
                 }
               />
 
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)}
+                onClick={() => setShowPassword((prev) => !prev)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-[#5A5856]"
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -163,14 +156,10 @@ const Login = () => {
 
         {/* BACK */}
         <div className="text-center mt-6">
-          <Link
-            to="/"
-            className="text-sm text-accent  transition"
-          >
+          <Link to="/" className="text-sm text-accent">
             ← Back to Home
           </Link>
         </div>
-
       </div>
     </div>
   );

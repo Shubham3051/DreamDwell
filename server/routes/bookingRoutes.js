@@ -5,13 +5,13 @@ import {
   getAgentBookings,
   updateBookingStatus,
 } from "../controllers/bookingController.js";
-import { isAuthenticated } from "../middleware/authMiddleware.js";
+import { authMiddleware } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", isAuthenticated, createBooking);
-router.get("/my", isAuthenticated, getMyBookings);
-router.get("/agent", isAuthenticated, getAgentBookings);
-router.patch("/:id", isAuthenticated, updateBookingStatus);
+router.post("/", authMiddleware, createBooking);
+router.get("/my", authMiddleware, getMyBookings);
+router.get("/agent", authMiddleware, getAgentBookings);
+router.patch("/:id", authMiddleware, updateBookingStatus);
 
 export default router;

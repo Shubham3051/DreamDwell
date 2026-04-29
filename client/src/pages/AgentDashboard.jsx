@@ -20,6 +20,25 @@ const AgentDashboard = () => {
   const [bookingsLoading, setBookingsLoading] = useState(true);
 
   useEffect(() => {
+    // Fetch initial stats
+    const fetchAgentStats = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get("http://localhost:8000/user/agent-stats", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setStats({
+          properties: res.data.properties || 0,
+          leads: res.data.leads || 0,
+          appointments: res.data.appointments || 0,
+          earnings: res.data.earnings || 0,
+        });
+      } catch (err) {
+        console.error("Error fetching agent stats:", err);
+      }
+    };
+    fetchAgentStats();
+
     if (!socketRef.current) return;
 
     const socket = socketRef.current;

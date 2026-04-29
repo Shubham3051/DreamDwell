@@ -10,6 +10,7 @@ import chatRoutes from "./routes/chatRoutes.js";
 import propertyRoute from "./routes/propertyRoutes.js";
 import savedRoutes from "./routes/savedRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
+import contactRoutes from "./routes/contactRoutes.js";
 import { initChatSocket } from "./sockets/chatSocket.js";
 
 dotenv.config();
@@ -32,6 +33,7 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/properties", propertyRoute);
 app.use("/api/saved", savedRoutes);
 app.use("/api/bookings", bookingRoutes);
+app.use("/api/contact", contactRoutes);
 
 // Create server
 const server = http.createServer(app);
@@ -56,7 +58,7 @@ app.use((req, res) => {
 connectDB()
   .then(() => {
     server.listen(port, () => {
-      console.log(`🚀 Server running on port ${port}`);
+      console.log(` Server running on port ${port}`);
     });
   })
   .catch((err) => {

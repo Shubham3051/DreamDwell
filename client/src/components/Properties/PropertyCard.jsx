@@ -1,55 +1,146 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import { BedDouble, Bath, Maximize, MapPin } from "lucide-react";
 
-const PropertyCard = ({ property }) => {
+const PropertyCard = ({
+  id,
+  image,
+  name,
+  price,
+  location,
+  beds,
+  baths,
+  sqft,
+  badge,
+  tags = [] // ✅ prevents crash
+}) => {
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
-
-  if (!property) return null;
+  const { user } = useContext(AuthContext) || {}; // ✅ safe
 
   const handleClick = () => {
     if (!user) {
-      navigate("/select-role");
+      navigate("/register");
       return;
     }
-
-    navigate(`/property/${property._id || property.id}`);
+    navigate(`/property/${id}`);
   };
-
-  const imageUrl = Array.isArray(property.image) ? property.image[0] : property.image;
 
   return (
     <div
       onClick={handleClick}
-      className="cursor-pointer block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition duration-300 transform hover:-translate-y-1"
+      className="cursor-pointer bg-white rounded-xl border p-4 shadow-sm hover:shadow-md"
     >
-      <div className="w-full h-52 overflow-hidden bg-gray-100">
-        <img
-          src={imageUrl}
-          alt={property.title}
-          className="w-full h-full object-cover hover:scale-110 transition duration-300"
-        />
+      {/* IMAGE */}
+      <img
+        src={image || "https://via.placeholder.com/400"}
+        alt={name || "property"}
+        className="w-full h-40 object-cover rounded-md mb-3"
+      />
+
+      {/* TITLE */}
+      <h3 className="font-bold text-lg">
+        {name || "No Title"}
+      </h3>
+
+      {/* PRICE */}
+      <p className="text-red-500 font-semibold">
+        {price || "N/A"}
+      </p>
+
+      {/* LOCATION */}
+      <div className="flex items-center text-sm text-gray-500">
+        <MapPin size={14} />
+        <span className="ml-1">{location || "Unknown"}</span>
       </div>
 
-      <div className="p-4">
-        <h3 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-1">
-          {property.title}
-        </h3>
+      {/* SPECS */}
+      <div className="flex gap-4 text-sm mt-2">
+        <span><BedDouble size={14} /> {beds || 0}</span>
+        <span><Bath size={14} /> {baths || 0}</span>
+        <span><Maximize size={14} /> {sqft || 0}</span>
+      </div>
 
-        <p className="text-xl font-bold text-blue-600 mb-1">
-          ${property.price.toLocaleString()}
-        </p>
-
-        <p className="text-gray-500 text-sm">
-          📍 {property.location}
-        </p>
+      {/* TAGS */}
+      <div className="flex flex-wrap gap-2 mt-2">
+        {Array.isArray(tags) &&
+          tags.map((tag, i) => (
+            <span key={i} className="text-xs bg-gray-100 px-2 py-1 rounded">
+              {tag}
+            </span>
+          ))}
       </div>
     </div>
   );
 };
 
 export default PropertyCard;
+
+// import React, { useContext } from "react";
+// import { useNavigate } from "react-router-dom";
+// import { AuthContext } from "../../context/AuthContext";
+
+// const PropertyCard = ({ property }) => {
+//   const navigate = useNavigate();
+//   const { user } = useContext(AuthContext);
+
+//   if (!property) return null;
+
+//   const handleClick = () => {
+//     if (!user) {
+//       navigate("/register");
+//       return;
+//     }
+//     navigate(`/property/${property._id || property.id}`);
+//   };
+
+//   const imageUrl = Array.isArray(property.image)
+//     ? property.image[0]
+//     : property.image;
+
+//   return (
+//     <div
+//       onClick={handleClick}
+//       className="cursor-pointer bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group"
+//     >
+//       {/* Image */}
+//       <div className="relative w-full h-52 overflow-hidden bg-gray-100">
+//         <img
+//           src={imageUrl}
+//           alt={property.title}
+//           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+//         />
+
+//         {/* subtle gradient overlay */}
+//         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+//       </div>
+
+//       {/* Content */}
+//       <div className="p-4">
+//         <h3 className="text-lg font-semibold text-gray-800 mb-1 line-clamp-1">
+//           {property.title}
+//         </h3>
+
+//         <p className="text-2xl font-bold text-[#D4755B] mb-1">
+//           ₹{property.price?.toLocaleString()}
+//         </p>
+
+//         <p className="text-gray-500 text-sm flex items-center gap-1">
+//           📍 <span>{property.location}</span>
+//         </p>
+
+//         {/* Optional hover button feel (visual only) */}
+//         <div className="mt-3 opacity-0 group-hover:opacity-100 transition">
+//           <button className="w-full py-2 rounded-lg bg-[#D4755B] text-white text-sm font-medium">
+//             View Details
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default PropertyCard;
 
 // import React, { useState } from 'react';
 // import { Link } from 'react-router-dom';

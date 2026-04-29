@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff, Home } from "lucide-react";
-import axios from "axios";
 import { toast } from "react-toastify";
+import { useAuth } from "../context/AuthContext";
 
 const Register = () => {
   const navigate = useNavigate();
+  const { register } = useAuth();
 
   const [form, setForm] = useState({
     name: "",
@@ -17,30 +18,43 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  // ✅ handle input
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // ✅ simple validation
+  const validate = () => {
+    if (form.password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return false;
+    }
+    if (!form.email.includes("@")) {
+      toast.error("Invalid email");
+      return false;
+    }
+    return true;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!validate()) return;
+
     try {
       setIsLoading(true);
 
-      const res = await axios.post(
-        "http://localhost:8000/user/register",
-        form,
-        { headers: { "Content-Type": "application/json" } }
-      );
+      const res = await register(form);
 
-      if (res.data.success) {
-        toast.success("Account created successfully");
-        navigate("/login");
+      if (res.success) {
+        toast.success("Account created. Please verify your email.");
+        navigate("/verify");
       } else {
-        toast.error(res.data.message);
+        toast.error(res.message);
       }
     } catch (err) {
-      toast.error("Registration failed");
+      toast.error("Something went wrong");
     } finally {
       setIsLoading(false);
     }
@@ -51,7 +65,6 @@ const Register = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#FAF8F4] px-4">
-
       <div className="max-w-[480px] w-full">
 
         {/* Logo */}
@@ -73,7 +86,7 @@ const Register = () => {
               Create Account
             </h2>
             <p className="text-sm text-[#64748B] mt-1">
-              Register as User / Agent / Admin
+              Register as User or Agent
             </p>
           </div>
 
@@ -123,7 +136,7 @@ const Register = () => {
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={() => setShowPassword((prev) => !prev)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-[#64748B]"
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -142,7 +155,6 @@ const Register = () => {
               >
                 <option value="user">User</option>
                 <option value="agent">Agent</option>
-                <option value="admin">Admin</option>
               </select>
             </div>
 
@@ -150,7 +162,7 @@ const Register = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 rounded-xl font-semibold text-white bg-[#D4755B] hover:bg-[#C05621] transition"
+              className="w-full py-3 rounded-xl font-semibold text-white bg-[#D4755B] hover:bg-[#C05621] transition disabled:opacity-60"
             >
               {isLoading ? "Creating..." : "Create Account"}
             </button>
@@ -160,7 +172,7 @@ const Register = () => {
           {/* Login */}
           <p className="text-center text-sm text-[#64748B] mt-5">
             Already have an account?{" "}
-            <Link to="/login" className="font-semibold text-accent ">
+            <Link to="/select-role" className="font-semibold text-accent">
               Login
             </Link>
           </p>
@@ -168,7 +180,7 @@ const Register = () => {
 
         {/* Back */}
         <div className="text-center mt-6">
-          <Link to="/" className="text-sm text-[#64748B] hover:text-[#D4755B]">
+          <Link to="/" className="text-sm text-accent hover:text-[#D4755B]">
             ← Back to Home
           </Link>
         </div>

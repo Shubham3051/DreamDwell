@@ -1,13 +1,13 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { CheckCircle, XCircle, Loader2, Mail } from "lucide-react";
+import api from "../services/api"; // ✅ use axios instance
 
 const Verify = () => {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
 
-  const [status, setStatus] = useState("verifying"); 
+  const [status, setStatus] = useState("verifying");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,23 +20,18 @@ const Verify = () => {
       try {
         setStatus("verifying");
 
-        const res = await axios.post(
-          "http://localhost:8000/user/verify",
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        // ✅ cleaner API call (no manual headers)
+        const res = await api.post(`/user/verify/${token}`);
 
         if (res.data.success) {
           setStatus("success");
+
+          // redirect after delay
           setTimeout(() => navigate("/login"), 2000);
         } else {
           setStatus("error");
         }
-      } catch (err) {
+      } catch {
         setStatus("error");
       }
     };
@@ -97,7 +92,6 @@ const Verify = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#FAF8F4] px-4">
-
       <div className="w-full max-w-md">
 
         {/* Logo */}
@@ -109,9 +103,7 @@ const Verify = () => {
 
         {/* Card */}
         <div className="bg-white border border-[#E6E0DA] rounded-2xl p-8 shadow-xl text-center">
-
           {renderContent()}
-
         </div>
 
       </div>

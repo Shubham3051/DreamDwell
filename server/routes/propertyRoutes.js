@@ -9,21 +9,21 @@ import {
   getMyProperties,
 } from "../controllers/propertyController.js";
 
-import { isAuthenticated } from "../middleware/authMiddleware.js";
+import { authMiddleware } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", isAuthenticated, createProperty);
+router.post("/", authMiddleware, createProperty);
 router.get("/", getAllProperties);
 router.get("/:id", getPropertyById);
-router.put("/:id", isAuthenticated, updateProperty);
-router.delete("/:id", isAuthenticated, deleteProperty);
+router.put("/:id", authMiddleware, updateProperty);
+router.delete("/:id", authMiddleware, deleteProperty);
 
 // admin / workflow
-router.patch("/status/:id", isAuthenticated, updatePropertyStatus);
+router.patch("/status/:id", authMiddleware, updatePropertyStatus);
 
 // user dashboard
-router.get("/user/my", isAuthenticated, getMyProperties);
+router.get("/user/my", authMiddleware, getMyProperties);
 
 export default router;
 

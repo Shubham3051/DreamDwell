@@ -7,7 +7,7 @@
 //   const [selected, setSelected] = useState(null);
 
 //   useEffect(() => {
-//     axios.get("http://localhost:5000/api/properties")
+//     axios.get("http://localhost:8000/api/properties")
 //       .then(res => setProperties(res.data));
 //   }, []);
 
@@ -49,7 +49,6 @@ function App() {
           <main className="flex-grow">
             <AppRoutes />
           </main>
-          <Footer />
         </div>
       </BrowserRouter>
     </ChatProvider>

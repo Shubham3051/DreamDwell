@@ -1,5 +1,5 @@
 // // Configuration constants
-// export const backendurl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+// export const backendurl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
 
 // // API endpoints
 // export const API_ENDPOINTS = {

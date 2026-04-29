@@ -30,7 +30,7 @@ const Sidebar = ({ role, isOpen, setIsOpen, isCollapsed, setIsCollapsed }) => {
 
   const handleLogout = () => {
     localStorage.clear();
-    navigate("/login");
+    navigate("/register");
   };
 
   // 🔥 Role-based menu
@@ -42,8 +42,8 @@ const Sidebar = ({ role, isOpen, setIsOpen, isCollapsed, setIsCollapsed }) => {
     ],
     agent: [
       { path: "/agent-dashboard", label: "Dashboard", icon: Home },
-      { path: '/list', label: 'All Properties', icon: Building2 },
-      { path: "/agent/leads", label: "Leads", icon: Users },
+      { path: '/properties', label: 'All Properties', icon: Building2 },
+      // { path: "/agent/leads", label: "Leads", icon: Users },
       { path: "/chat", label: "Chat", icon: MessageCircle },
     ],
     user: [
