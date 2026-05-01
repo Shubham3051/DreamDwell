@@ -9,7 +9,7 @@ const NotFound = () => {
         
         {/* Background Decorative Number */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <h1 className="text-[250px] font-black opacity-[0.03] select-none text-[#1C1B1A]">
+          <h1 className="text-[250px] font-black opacity-[0.07] select-none text-[#151413]">
             404
           </h1>
         </div>
