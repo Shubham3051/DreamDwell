@@ -19,10 +19,10 @@ const Home = () => {
   });
 
   return (
-    <div className="relative antialiased bg-white">
-      {/* Top Scroll Progress Bar */}
+    <div className="relative antialiased bg-[#FAF8F4] selection:bg-[#D4755B]/30 selection:text-[#1C1B1A]">
+      {/* Brand Scroll Progress Bar */}
       <motion.div
-        className="fixed top-0 left-0 right-0 h-1 bg-blue-600 origin-left z-[1000]"
+        className="fixed top-0 left-0 right-0 h-1.5 bg-[#D4755B] origin-left z-[1000] shadow-[0_2px_10px_rgba(212,117,91,0.3)]"
         style={{ scaleX }}
       />
 
@@ -35,30 +35,33 @@ const Home = () => {
         </section>
 
         {/* MAIN CONTENT WRAPPER */}
-        {/* Changed background to a more sophisticated off-white/gray-50 */}
-        <div className="bg-gray-50/50">
+        <div className="bg-[#FAF8F4]">
           
           {/* PROGRAMS SECTION */}
-          <section id="programs" className="py-10">
+          <section id="programs" className="py-20">
             <div className="max-w-7xl mx-auto">
-              <Title subtitle="Our Collection" head="Property Categories" />
+              <Title 
+                subtitle="Exquisite Spaces" 
+                head="Our Architectural Portfolio" 
+              />
               <Programs />
             </div>
           </section>
 
           {/* ABOUT SECTION */}
-          <section id="about" className="py-20 bg-white">
+          {/* Using a subtle white-to-cream gradient for depth */}
+          <section id="about" className="py-20 bg-gradient-to-b from-white to-[#FAF8F4]">
             <div className="max-w-7xl mx-auto">
               <About />
             </div>
           </section>
 
           {/* GALLERY SECTION */}
-          <section id="gallery" className="py-20">
+          <section id="gallery" className="pb-32">
             <div className="max-w-7xl mx-auto">
               <Galtitle
-                heading="Visual Gallery"
-                subhead="A curated glimpse of our most prestigious properties"
+                heading="THE GALLERY"
+                subhead="A curated glimpse of our most prestigious properties and visionary living spaces."
               />
               <Gallery />
             </div>

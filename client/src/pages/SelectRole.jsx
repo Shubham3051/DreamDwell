@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { User, Shield, BadgeCheck } from "lucide-react";
 
 const SelectRole = () => {
@@ -86,8 +86,15 @@ const SelectRole = () => {
 
         {/* Footer hint */}
         <p className="text-center text-xs text-[#9CA3AF] mt-6">
-          You can change your role anytime from settings
+          You can change your role anytime from your profile settings.
         </p>
+
+        {/* Back */}
+        <div className="text-center mt-6">
+          <Link to="/" className="text-sm text-accent hover:text-[#D4755B]">
+            ← Back to Home
+          </Link>
+        </div>
 
       </div>
     </div>

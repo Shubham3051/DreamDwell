@@ -11,7 +11,6 @@ const Footer = () => {
     { title: "Support", links: ["Help Center", "Privacy Policy", "Terms of Use", "FAQ"] },
   ];
 
-  // Using Inline SVGs to avoid "Module Not Found" errors forever
   const socialIcons = [
     { 
       name: "Facebook",
@@ -52,29 +51,29 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-[#0b0f1a] text-white pt-20 pb-10 px-6 md:px-12 lg:px-24 w-full font-sans border-t border-white/5">
+    <footer className="bg-[#1C1B1A] text-white pt-24 pb-12 px-6 md:px-12 lg:px-24 w-full font-sans">
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-16 mb-20">
           
-          <div className="lg:col-span-2 space-y-6">
+          {/* Brand Identity */}
+          <div className="lg:col-span-2 space-y-8">
             <motion.div 
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
-              className="text-2xl font-black tracking-tighter flex items-center gap-2"
+              className="text-3xl font-black tracking-tighter uppercase italic flex items-center gap-2"
             >
-              <span className="text-blue-600">🏠</span> DreamDwell
+              <span className="text-[#D4755B]">D</span>reamDwell
             </motion.div>
             <p className="text-gray-400 text-lg font-light leading-relaxed max-w-sm">
-              Revolutionizing the real estate journey with transparency, 
-              intelligence, and world-class service. Find your sanctuary with us.
+              Crafting sanctuaries through visionary architecture and unparalleled service. Your journey home begins with a single, elegant step.
             </p>
-            <div className="flex gap-4">
+            <div className="flex gap-5">
               {socialIcons.map(({ Icon, href }, index) => (
                 <motion.a
                   key={index}
                   href={href}
-                  whileHover={{ y: -5, textShadow: "0px 0px 8px rgb(37, 99, 235)" }}
-                  className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-blue-600 transition-all duration-300"
+                  whileHover={{ y: -5, scale: 1.1 }}
+                  className="w-11 h-11 rounded-full border border-white/10 flex items-center justify-center hover:bg-[#D4755B] hover:border-[#D4755B] transition-all duration-500"
                 >
                   <Icon size={18} />
                 </motion.a>
@@ -82,17 +81,18 @@ const Footer = () => {
             </div>
           </div>
 
+          {/* Link Sections */}
           {footerLinks.map((section, index) => (
-            <div key={index} className="space-y-6">
-              <h4 className="text-sm font-bold uppercase tracking-[0.2em] text-blue-500">
+            <div key={index} className="space-y-8">
+              <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-[#D4755B]">
                 {section.title}
               </h4>
-              <ul className="space-y-4">
+              <ul className="space-y-5">
                 {section.links.map((link) => (
                   <li key={link}>
                     <a 
                       href={`#${link.toLowerCase().replace(/\s+/g, '')}`}
-                      className="text-gray-400 hover:text-white transition-colors duration-300 font-medium"
+                      className="text-gray-400 hover:text-white transition-all duration-300 font-medium text-sm tracking-wide"
                     >
                       {link}
                     </a>
@@ -103,29 +103,31 @@ const Footer = () => {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-8 border-y border-white/5 mb-10">
-          <div className="flex items-center gap-4 text-gray-400">
-            <div className="p-3 bg-blue-600/10 rounded-xl text-blue-500"><Mail size={20} /></div>
-            <span>contact@dreamdwell.com</span>
+        {/* Contact Strip */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 py-10 border-y border-white/5 mb-12">
+          <div className="flex items-center gap-5 text-gray-300">
+            <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center text-[#D4755B]"><Mail size={20} /></div>
+            <span className="text-sm font-medium tracking-wide">contact@dreamdwell.com</span>
           </div>
-          <div className="flex items-center gap-4 text-gray-400">
-            <div className="p-3 bg-blue-600/10 rounded-xl text-blue-500"><Phone size={20} /></div>
-            <span>+1 (555) 000-1234</span>
+          <div className="flex items-center gap-5 text-gray-300">
+            <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center text-[#D4755B]"><Phone size={20} /></div>
+            <span className="text-sm font-medium tracking-wide">+1 (555) 000-1234</span>
           </div>
-          <div className="flex items-center gap-4 text-gray-400">
-            <div className="p-3 bg-blue-600/10 rounded-xl text-blue-500"><MapPin size={20} /></div>
-            <span>123 Realty Blvd, NY 10001</span>
+          <div className="flex items-center gap-5 text-gray-300">
+            <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center text-[#D4755B]"><MapPin size={20} /></div>
+            <span className="text-sm font-medium tracking-wide">Hamirpur, Himachal Pradesh, India</span>
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-gray-500 text-sm">
-            © {currentYear} <span className="font-bold text-gray-400">DreamDwell</span>. Built for the future of living.
+        {/* Bottom Bar */}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+          <p className="text-gray-500 text-xs tracking-widest uppercase font-bold">
+            © {currentYear} <span className="text-white">DreamDwell</span> — Architecture for Life.
           </p>
-          <div className="flex gap-8 text-xs font-bold uppercase tracking-widest text-gray-600">
-            <a href="#" className="hover:text-blue-500 transition-colors">Privacy</a>
-            <a href="#" className="hover:text-blue-500 transition-colors">Cookies</a>
-            <a href="#" className="hover:text-blue-500 transition-colors">Security</a>
+          <div className="flex gap-10 text-[10px] font-black uppercase tracking-[0.3em] text-gray-600">
+            <a href="#" className="hover:text-[#D4755B] transition-colors">Privacy</a>
+            <a href="#" className="hover:text-[#D4755B] transition-colors">Cookies</a>
+            <a href="#" className="hover:text-[#D4755B] transition-colors">Security</a>
           </div>
         </div>
       </div>

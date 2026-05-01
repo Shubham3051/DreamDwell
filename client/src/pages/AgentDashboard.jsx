@@ -1,26 +1,20 @@
 import React, { useEffect, useState } from "react";
 import DashboardLayout from "../components/common/DashboardLayout";
 import StatCard from "../components/common/StatCard";
-import { Home, Users, Calendar, DollarSign } from "lucide-react";
+import { Home, Users, Calendar, DollarSign, Check, X, MapPin, Phone, MessageSquare } from "lucide-react";
 import { useSocket } from "../hooks/useSocket";
+import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { cn } from "../lib/utils.js";
 
 const AgentDashboard = () => {
   const socketRef = useSocket();
-
-  const [stats, setStats] = useState({
-    properties: 0,
-    leads: 0,
-    appointments: 0,
-    earnings: 0,
-  });
-
+  const [stats, setStats] = useState({ properties: 0, leads: 0, appointments: 0, earnings: 0 });
   const [bookings, setBookings] = useState([]);
   const [bookingsLoading, setBookingsLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch initial stats
     const fetchAgentStats = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -40,10 +34,7 @@ const AgentDashboard = () => {
     fetchAgentStats();
 
     if (!socketRef.current) return;
-
     const socket = socketRef.current;
-
-    // ✅ Listen for updates
     socket.on("statsUpdate", (data) => {
       setStats({
         properties: data?.properties || 0,
@@ -52,14 +43,9 @@ const AgentDashboard = () => {
         earnings: data?.earnings || 0,
       });
     });
-
-    // ✅ Cleanup listener ONLY
-    return () => {
-      socket.off("statsUpdate");
-    };
+    return () => { socket.off("statsUpdate"); };
   }, [socketRef]);
 
-  // Fetch bookings
   useEffect(() => {
     const fetchBookings = async () => {
       try {
@@ -86,113 +72,137 @@ const AgentDashboard = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (res.data.success) {
-        setBookings((prev) =>
-          prev.map((b) =>
-            b._id === bookingId ? { ...b, status } : b
-          )
-        );
-        toast.success(`Booking ${status}`);
+        setBookings((prev) => prev.map((b) => b._id === bookingId ? { ...b, status } : b));
+        toast.success(`Visit ${status} successfully`);
       }
     } catch (error) {
-      console.error("Error updating booking:", error);
-      toast.error("Failed to update booking");
+      toast.error("Action failed");
     }
   };
 
-  const statusColor = {
-    pending: "bg-yellow-100 text-yellow-700",
-    confirmed: "bg-green-100 text-green-700",
-    cancelled: "bg-red-100 text-red-700",
+  const statusStyles = {
+    pending: "bg-amber-50 text-amber-600 border-amber-100",
+    confirmed: "bg-emerald-50 text-emerald-600 border-emerald-100",
+    cancelled: "bg-rose-50 text-rose-600 border-rose-100",
   };
 
   return (
     <DashboardLayout role="agent">
-      <h1 className="text-2xl font-bold mb-6">Agent Dashboard</h1>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="Properties" value={stats.properties} icon={Home} color="text-orange-500" />
-        <StatCard title="Leads" value={stats.leads} icon={Users} color="text-blue-500" />
-        <StatCard title="Appointments" value={bookings.length} icon={Calendar} color="text-green-500" />
-        <StatCard title="Earnings" value={`₹${stats.earnings}`} icon={DollarSign} color="text-purple-500" />
-      </div>
-
-      {/* BOOKINGS SECTION */}
-      <div className="mt-10">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">📅 Visit Bookings</h2>
-
-        {bookingsLoading ? (
-          <p className="text-gray-500">Loading bookings...</p>
-        ) : bookings.length === 0 ? (
-          <p className="text-gray-500">No bookings yet.</p>
-        ) : (
-          <div className="space-y-4">
-            {bookings.map((booking) => {
-              const imageUrl = Array.isArray(booking.property?.image)
-                ? booking.property.image[0]
-                : booking.property?.image;
-
-              return (
-                <div
-                  key={booking._id}
-                  className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex flex-col md:flex-row gap-4"
-                >
-                  {/* Property image */}
-                  {imageUrl && (
-                    <div className="w-full md:w-32 h-24 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                      <img src={imageUrl} alt="" className="w-full h-full object-cover" />
-                    </div>
-                  )}
-
-                  {/* Details */}
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-gray-800">
-                      {booking.property?.title || "Property"}
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      📍 {booking.property?.location}
-                    </p>
-                    <p className="text-sm text-gray-600 mt-1">
-                      👤 {booking.user?.name} ({booking.user?.email})
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      📞 {booking.phone} &nbsp;|&nbsp;
-                      📅 {new Date(booking.date).toLocaleDateString()} at {booking.time}
-                    </p>
-                    {booking.message && (
-                      <p className="text-sm text-gray-500 mt-1 italic">
-                        "{booking.message}"
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Status + Actions */}
-                  <div className="flex flex-col items-end justify-between gap-2">
-                    <span className={`text-xs font-semibold px-3 py-1 rounded-full ${statusColor[booking.status]}`}>
-                      {booking.status.toUpperCase()}
-                    </span>
-
-                    {booking.status === "pending" && (
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleBookingAction(booking._id, "confirmed")}
-                          className="text-xs bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 transition"
-                        >
-                          Confirm
-                        </button>
-                        <button
-                          onClick={() => handleBookingAction(booking._id, "cancelled")}
-                          className="text-xs bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+      <div className="max-w-7xl mx-auto space-y-10">
+        
+        {/* Header Area */}
+        <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#D4755B] mb-2">Executive</p>
+            <h1 className="text-4xl font-black tracking-tighter uppercase italic text-[#1C1B1A]">
+              Agent <span className="text-[#D4755B]">Terminal</span>
+            </h1>
           </div>
-        )}
+          <div className="flex gap-2">
+             <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse mt-2" />
+             <span className="text-xs font-bold uppercase tracking-widest text-gray-400">Live Market Sync Active</span>
+          </div>
+        </header>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <StatCard title="Portfolio" value={stats.properties} icon={Home} color="text-[#D4755B]" className="bg-white border-none shadow-sm" />
+          <StatCard title="Hot Leads" value={stats.leads} icon={Users} color="text-[#D4755B]" className="bg-white border-none shadow-sm" />
+          <StatCard title="Visits" value={bookings.length} icon={Calendar} color="text-[#D4755B]" className="bg-white border-none shadow-sm" />
+          <StatCard title="Revenue" value={`₹${stats.earnings.toLocaleString()}`} icon={DollarSign} color="text-[#D4755B]" className="bg-white border-none shadow-sm" />
+        </div>
+
+        {/* BOOKINGS SECTION */}
+        <section className="mt-12">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-black uppercase tracking-widest text-[#1C1B1A]">Upcoming Visits</h2>
+            <div className="h-px flex-1 bg-gray-200 mx-6 hidden md:block" />
+          </div>
+
+          {bookingsLoading ? (
+            <div className="flex justify-center py-20"><div className="w-8 h-8 border-4 border-[#D4755B] border-t-transparent rounded-full animate-spin" /></div>
+          ) : bookings.length === 0 ? (
+            <div className="bg-[#FAF8F4] rounded-3xl p-20 text-center border border-dashed border-gray-300">
+              <p className="text-gray-400 font-medium">No site visits currently scheduled.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4">
+              <AnimatePresence>
+                {bookings.map((booking, idx) => (
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    key={booking._id}
+                    className="group bg-white rounded-2xl p-5 border border-gray-100 hover:border-[#D4755B]/30 hover:shadow-xl hover:shadow-[#D4755B]/5 transition-all flex flex-col lg:flex-row items-center gap-6"
+                  >
+                    {/* Property Thumbnail */}
+                    <div className="w-full lg:w-40 h-28 rounded-xl overflow-hidden bg-gray-100 shrink-0">
+                      <img 
+                        src={Array.isArray(booking.property?.image) ? booking.property.image[0] : booking.property?.image} 
+                        alt="" 
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                      />
+                    </div>
+
+                    {/* Client & Property Details */}
+                    <div className="flex-1 w-full">
+                      <div className="flex items-start justify-between mb-2">
+                        <h3 className="font-bold text-lg text-[#1C1B1A] truncate">{booking.property?.title}</h3>
+                        <span className={cn("text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border", statusStyles[booking.status])}>
+                          {booking.status}
+                        </span>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-4">
+                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                          <Users size={14} className="text-[#D4755B]" />
+                          <span className="font-semibold text-gray-700">{booking.user?.name}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                          <MapPin size={14} />
+                          <span className="truncate">{booking.property?.location}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                          <Calendar size={14} />
+                          <span>{new Date(booking.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })} • {booking.time}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                          <Phone size={14} />
+                          <span>{booking.phone}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Action Sidebar */}
+                    <div className="flex lg:flex-col gap-2 w-full lg:w-auto shrink-0">
+                      {booking.status === "pending" ? (
+                        <>
+                          <button
+                            onClick={() => handleBookingAction(booking._id, "confirmed")}
+                            className="flex-1 lg:w-32 py-2.5 bg-[#D4755B] text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-[#1C1B1A] transition-colors flex items-center justify-center gap-2"
+                          >
+                            <Check size={14} /> Confirm
+                          </button>
+                          <button
+                            onClick={() => handleBookingAction(booking._id, "cancelled")}
+                            className="flex-1 lg:w-32 py-2.5 bg-white text-rose-500 border border-rose-100 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-rose-50 transition-colors flex items-center justify-center gap-2"
+                          >
+                            <X size={14} /> Decline
+                          </button>
+                        </>
+                      ) : (
+                        <button className="flex-1 lg:w-32 py-2.5 bg-gray-50 text-gray-400 rounded-xl text-xs font-black uppercase tracking-widest cursor-default flex items-center justify-center gap-2">
+                          <MessageSquare size={14} /> Chat
+                        </button>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          )}
+        </section>
       </div>
     </DashboardLayout>
   );

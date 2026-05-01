@@ -1,13 +1,13 @@
 import { useEffect, useRef } from "react";
 import { useChat } from "../../context/ChatContext";
 import MessageInput from "./MessageInput";
+import { Phone, Video, MoreHorizontal, Shield } from "lucide-react";
 import axios from "axios";
 
 const ChatWindow = () => {
   const { activeChat, messages, setMessages, socket, currentUser } = useChat();
   const messagesEndRef = useRef(null);
 
-  // Scroll to bottom
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -16,7 +16,6 @@ const ChatWindow = () => {
     scrollToBottom();
   }, [messages]);
 
-  // Fetch messages
   useEffect(() => {
     const fetchMessages = async () => {
       if (!activeChat) return;
@@ -33,12 +32,10 @@ const ChatWindow = () => {
     fetchMessages();
   }, [activeChat, setMessages]);
 
-  // Socket listener
   useEffect(() => {
     if (!socket) return;
 
     const handleReceiveMessage = (newMessage) => {
-      // Only append if it belongs to the current active chat
       if (
         activeChat &&
         (String(newMessage.senderId) === String(activeChat.id) ||
@@ -59,29 +56,57 @@ const ChatWindow = () => {
 
   if (!activeChat) {
     return (
-      <div className="h-full flex items-center justify-center text-[#9CA3AF]">
-        Select a chat to start messaging
+      <div className="h-full flex flex-col items-center justify-center bg-[#FAF8F4] p-12 text-center">
+        <div className="w-20 h-20 bg-white rounded-[2rem] flex items-center justify-center shadow-xl shadow-[#D4755B]/10 mb-6 rotate-3">
+          <Shield size={32} className="text-[#D4755B]" />
+        </div>
+        <h2 className="text-xl font-black uppercase italic tracking-tighter text-[#1C1B1A] mb-2">
+          Secure <span className="text-[#D4755B]">Inquiry</span>
+        </h2>
+        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest max-w-[240px] leading-relaxed">
+          Select a resident or agent to view verified conversation history
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="h-full flex flex-col">
-      {/* HEADER */}
-      <div className="p-4 border-b border-[#E6D5C3] bg-white">
-        <h2 className="font-semibold text-[#1C1B1A]">
-          {activeChat.name}
-        </h2>
-        <p className="text-xs text-[#5A5856]">
-          Online chat
-        </p>
+    <div className="h-full flex flex-col bg-[#FAF8F4]">
+      {/* HEADER - Editorial Style */}
+      <div className="px-8 py-5 border-b border-[#1C1B1A]/5 bg-white flex items-center justify-between sticky top-0 z-10">
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 bg-[#1C1B1A] rounded-2xl flex items-center justify-center text-white text-xs font-black shadow-lg shadow-black/10">
+            {activeChat.name.substring(0, 2).toUpperCase()}
+          </div>
+          <div>
+            <h2 className="text-sm font-black uppercase tracking-tight text-[#1C1B1A]">
+              {activeChat.name}
+            </h2>
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                Active Channel
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <button className="p-2 text-gray-400 hover:text-[#D4755B] transition-colors"><Phone size={18} /></button>
+          <button className="p-2 text-gray-400 hover:text-[#D4755B] transition-colors"><Video size={18} /></button>
+          <div className="w-px h-4 bg-gray-200 mx-1" />
+          <button className="p-2 text-gray-400 hover:text-[#1C1B1A] transition-colors"><MoreHorizontal size={18} /></button>
+        </div>
       </div>
 
-      {/* MESSAGES */}
-      <div className="flex-1 p-4 overflow-y-auto space-y-4">
+      {/* MESSAGES - Architectural Flow */}
+      <div className="flex-1 px-8 py-6 overflow-y-auto space-y-6 no-scrollbar">
         {messages.length === 0 ? (
-          <div className="text-sm text-[#5A5856] text-center mt-4">
-            Start conversation...
+          <div className="flex flex-col items-center justify-center py-12 opacity-40">
+            <div className="h-px w-12 bg-[#D4755B] mb-4" />
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#1C1B1A]">
+              Establish Connection
+            </p>
           </div>
         ) : (
           messages.map((msg, index) => {
@@ -92,14 +117,17 @@ const ChatWindow = () => {
                 className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}
               >
                 <div
-                  className={`max-w-[70%] px-4 py-2 rounded-2xl text-sm ${
+                  className={`max-w-[75%] md:max-w-[60%] px-5 py-3.5 rounded-2xl text-sm font-medium leading-relaxed shadow-sm transition-all ${
                     isMe
-                      ? "bg-[#D4755B] text-white rounded-br-none"
-                      : "bg-[#F5F1E8] text-[#1C1B1A] rounded-bl-none border border-[#E6D5C3]"
+                      ? "bg-[#D4755B] text-white rounded-br-none shadow-[#D4755B]/20"
+                      : "bg-white text-[#1C1B1A] rounded-bl-none border border-[#1C1B1A]/5"
                   }`}
                 >
                   {msg.message}
                 </div>
+                <span className={`text-[8px] font-black uppercase tracking-widest text-gray-300 mt-2 px-1 ${isMe ? "text-right" : "text-left"}`}>
+                  {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
               </div>
             );
           })
@@ -107,8 +135,10 @@ const ChatWindow = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* INPUT */}
-      <MessageInput />
+      {/* INPUT CONTAINER */}
+      <div className="p-6 bg-white border-t border-[#1C1B1A]/5">
+        <MessageInput />
+      </div>
     </div>
   );
 };
