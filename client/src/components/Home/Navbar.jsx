@@ -44,6 +44,9 @@ const Navbar = () => {
           <li>
             <Link to="/contact" className="hover:text-blue-400 transition-colors">Contact Us</Link>
           </li>
+          <li>
+            <Link to="/properties" className="hover:text-blue-400 transition-colors">Properties</Link>
+          </li>
         </ul>
 
         <div className="flex items-center gap-4 ml-4">
