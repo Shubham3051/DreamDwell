@@ -98,7 +98,9 @@ const UserDashboard = () => {
               <h3 className="text-2xl font-bold mb-2">Find your next investment.</h3>
               <p className="text-gray-400 font-light max-w-xs">Our latest exclusive listings in Himachal are now available for viewing.</p>
             </div>
-            <button className="relative z-10 flex items-center gap-2 text-[#D4755B] font-bold uppercase tracking-widest text-xs group-hover:gap-4 transition-all">
+            <button
+            onClick={() => navigate("/properties")}
+            className="relative z-10 flex items-center gap-2 text-[#D4755B] font-bold uppercase tracking-widest text-xs group-hover:gap-4 transition-all">
               Browse Properties <ArrowUpRight size={16} />
             </button>
             
